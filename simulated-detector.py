@@ -3,6 +3,7 @@ __doc__ = "This session demonstrates the simulated camera."
 import numpy as np
 import matplotlib.pyplot as plt
 from concert.quantities import q
+from concert.session import pdoc
 from concert.devices.cameras.dummy import Camera
 from concert.processes.scan import Scanner
 
@@ -32,7 +33,9 @@ def plot_exposure_scan(min_exposure=1*q.ms, max_exposure=500*q.ms):
     return x, y
 
 
-def show_camera_frame():
+def show_camera_frame(exposure_time=5*q.ms):
+    """Show the frame as produced by the camera given *exposure_time*"""
+    camera.exposure_time = exposure_time
     camera.start_recording()
     frame = camera.grab()
     camera.stop_recording()
