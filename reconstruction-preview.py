@@ -4,15 +4,12 @@ __doc__ = "This session demonstrates online reconstruction preview faked " + \
 import os
 import time
 import logbook
-import numpy as np
-from libtiff import TIFF
-from concert.storage import write_libtiff
 from concert.ext.viewers import PyplotViewer
 from concert.coroutines import backprojector, ImageAverager
-from concert.helpers import inject, coroutine, multicast
+from concert.helpers import inject, multicast
 from concert.devices.cameras.dummy import FileCamera
 from concert.quantities import q
-from concert.experiments.imaging import flat_correct, acquire_images
+from concert.experiments.imaging import flat_correct
 
 
 LOG = logbook.Logger(__name__)
