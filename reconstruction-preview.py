@@ -72,35 +72,40 @@ def reconstruct(folder, num_projs, center, slice_num,
     radio_viewer = PyplotViewer()
     slice_viewer = PyplotViewer()
 
-    # Average incoming images (useful for flats and darks)
-    averager = ImageAverager()
+    try:
+        # Average incoming images (useful for flats and darks)
+        averager = ImageAverager()
 
-    # Take darks
-    inject(take_images(os.path.join(folder, "darks"), 1 * q.count),
-           averager.average_images())
-    dark = averager.average
+        # Take darks
+        inject(take_images(os.path.join(folder, "darks"), 1 * q.count),
+               averager.average_images())
+        dark = averager.average
 
-    # Take flats
-    inject(take_images(os.path.join(folder, "flats"), 1 * q.count),
-           averager.average_images())
-    flat = averager.average
+        # Take flats
+        inject(take_images(os.path.join(folder, "flats"), 1 * q.count),
+               averager.average_images())
+        flat = averager.average
 
-    backproject_generator = backprojector(slice_num, center,
-                                          num_projs=num_projs,
-                                          nth_column=nth_column,
-                                          nth_projection=nth_proj,
-                                          consumer=slice_viewer(
-                                              num_projs / nth_proj),
-                                          fast=True)
+        backproject_generator = backprojector(slice_num, center,
+                                              num_projs=num_projs,
+                                              nth_column=nth_column,
+                                              nth_projection=nth_proj,
+                                              consumer=slice_viewer(
+                                                  num_projs / nth_proj),
+                                              fast=True)
 
-    # Workflow:
-    #
-    # images -- flat_correction -- view radiographs
-    #                           \
-    #                            reconstruct one slice -- view slice
-    inject(take_images(os.path.join(folder, "radios"), num_projs * q.count),
-           flat_correct(multicast(backproject_generator,
-                                  radio_viewer(num_projs)), dark, flat))
+        # Workflow:
+        #
+        # images -- flat_correction -- view radiographs
+        #                           \
+        #                            reconstruct one slice -- view slice
+        inject(
+            take_images(os.path.join(folder, "radios"), num_projs * q.count),
+            flat_correct(multicast(backproject_generator,
+                                   radio_viewer(num_projs)), dark, flat))
+    except:
+        radio_viewer.terminate()
+        slice_viewer.terminate()
 
 
 if __name__ == '__main__':
