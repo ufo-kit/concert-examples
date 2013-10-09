@@ -103,7 +103,7 @@ def reconstruct(folder, num_projs, center, slice_num,
             take_images(os.path.join(folder, "radios"), num_projs * q.count),
             flat_correct(multicast(backproject_generator,
                                    radio_viewer(num_projs)), dark, flat))
-    except:
+    except KeyboardInterrupt:
         radio_viewer.terminate()
         slice_viewer.terminate()
 
