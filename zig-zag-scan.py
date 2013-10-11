@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 from concert.quantities import q
 from concert.devices.cameras.dummy import Camera
 from concert.devices.motors.dummy import Motor
-from concert.processes.scan import Scanner
 
 
 # Create a camera with noisy background
