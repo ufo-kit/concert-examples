@@ -20,6 +20,15 @@ def acquire_frame(camera):
     return frame
 
 
+def test_bit_depth_consistency(camera):
+    camera.exposure_time = 1 * q.s
+    frame = acquire_frame(camera)
+
+    bits = camera.sensor_bitdepth
+    success = np.mean(frame) < 2**bits.magnitude
+    return (success, "higher values than possible")
+
+
 def test_exposure_time_consistency(camera):
     camera.exposure_time = 1 * q.ms
     first = acquire_frame(camera)
