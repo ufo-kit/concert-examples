@@ -1,4 +1,7 @@
 """Session showing image viewing functionality."""
+import concert
+concert.require("0.6")
+
 import time
 import numpy as np
 from concert.quantities import q

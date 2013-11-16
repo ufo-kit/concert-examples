@@ -1,4 +1,7 @@
 """Session showing image and curve viewing functionality."""
+import concert
+concert.require("0.6")
+
 import numpy as np
 from concert.quantities import q
 from concert.helpers import coroutine

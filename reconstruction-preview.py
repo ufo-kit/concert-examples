@@ -3,16 +3,16 @@ __doc__ = "This session demonstrates online reconstruction preview faked " + \
 
 import os
 import time
-import logbook
+import logging
 from concert.ext.viewers import PyplotViewer
 from concert.coroutines import backprojector, ImageAverager
-from concert.helpers import inject, multicast
+from concert.helpers import inject, broadcast
 from concert.devices.cameras.dummy import FileCamera
 from concert.quantities import q
 from concert.experiments.imaging import flat_correct
 
 
-LOG = logbook.Logger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def readout_images(camera, num_frames=None):
@@ -101,7 +101,7 @@ def reconstruct(folder, num_projs, center, slice_num,
         #                            reconstruct one slice -- view slice
         inject(
             take_images(os.path.join(folder, "radios"), num_projs * q.count),
-            flat_correct(multicast(backproject_generator,
+            flat_correct(broadcast(backproject_generator,
                                    radio_viewer(num_projs)), dark, flat))
     except KeyboardInterrupt:
         radio_viewer.terminate()
