@@ -3,7 +3,7 @@ import timeit
 N_SETS = 1000
 N_RUNS = 3
 
-setup = """
+setup_futures = """
 from concert.quantities import q
 from concert.helpers import wait
 from concert.devices.motors.dummy import Motor
@@ -15,10 +15,25 @@ def test_set_position():
     wait(futures)
 """.format(N_SETS)
 
+setup_raw = """
+from concert.quantities import q
+from concert.helpers import wait
+from concert.devices.motors.dummy import Motor
+
+m = Motor()
+
+def test_set_position():
+    for i in range({}):
+        m.position = 0 * q.mm
+""".format(N_SETS)
+
 
 def benchmark():
-    time = timeit.timeit('test_set_position()', setup=setup, number=N_RUNS)
-    print("Throughput: {:.2f} ops/s".format(N_SETS * N_RUNS / time))
+    futures_time = timeit.timeit('test_set_position()', setup=setup_futures, number=N_RUNS)
+    raw_time = timeit.timeit('test_set_position()', setup=setup_raw, number=N_RUNS)
+
+    print("Futures: {:.2f} ops/s".format(N_SETS * N_RUNS / futures_time))
+    print("Raw: {:.2f} ops/s".format(N_SETS * N_RUNS / raw_time))
 
 
 if __name__ == '__main__':
