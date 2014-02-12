@@ -1,3 +1,6 @@
+import concert
+concert.require("0.6.0")
+
 __doc__ = "This session demonstrates the simulated camera."
 
 import numpy as np
@@ -16,7 +19,7 @@ def get_exposure_result(min_exposure, max_exposure):
     def get_mean_frame_value():
         return np.mean(camera.grab())
 
-    return scan(camera['exposure-time'], get_mean_frame_value,
+    return scan(camera['exposure_time'], get_mean_frame_value,
                 min_exposure, max_exposure)
 
 
@@ -27,7 +30,6 @@ def plot_exposure_scan(min_exposure=1*q.ms, max_exposure=500*q.ms):
 
     Returns: a tuple with exposure times and corresponding mean values.
     """
-    scanner = get_exposure_scanner(min_exposure, max_exposure)
     camera.start_recording()
     x, y = get_exposure_result(min_exposure, max_exposure).result()
     camera.stop_recording()
