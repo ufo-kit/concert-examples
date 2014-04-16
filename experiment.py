@@ -1,16 +1,16 @@
-from functools import partial
-import logging
-import concert
-concert.require("0.7.0")
+"""Call run('.') to simulate a data acquisition."""
 
+import concert
+concert.require("0.8.0")
+
+import logging
+from functools import partial
 from concert.session.utils import ddoc, dstate, pdoc
 from concert.session.utils import code_of
 from concert.experiments.base import Acquisition
 from concert.experiments.imaging import Experiment
-from concert.coroutines import coroutine
+from concert.coroutines.base import coroutine
 from concert.devices.cameras.dummy import Camera
-
-__doc__ = "This is session exper"
 
 LOG = logging.getLogger(__name__)
 
