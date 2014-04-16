@@ -1,21 +1,24 @@
-__doc__ = """---\nThis session shows how to implement a simple zig-zag scan using
+"""---\nThis session shows how to implement a simple zig-zag scan using
 two motors for horizontal (x_motor) and vertical movement (z_motor) as well as
 a detector. The result is an image composed of all scanned tiles."""
+
+import concert
+concert.require('0.8')
 
 import numpy as np
 import scipy.misc
 import matplotlib.pyplot as plt
 from concert.quantities import q
 from concert.devices.cameras.dummy import Camera
-from concert.devices.motors.dummy import Motor
+from concert.devices.motors.dummy import LinearMotor
 
 
 # Create a camera with noisy background
 camera = Camera(background=scipy.misc.lena())
 
 # Assume motors' zero coordinate is left and up respectively
-x_motor = Motor()
-z_motor = Motor()
+x_motor = LinearMotor()
+z_motor = LinearMotor()
 
 
 def zig_zag_scan(num_images_horizontally=2, num_images_vertically=2,
@@ -32,7 +35,7 @@ def zig_zag_scan(num_images_horizontally=2, num_images_vertically=2,
         image_row = None
 
         for j in range(num_images_horizontally):
-            x_motor.move(delta).wait()
+            x_motor.move(delta).join()
             frame = np.copy(camera.grab())
 
             if image_row is None:
@@ -51,6 +54,6 @@ def zig_zag_scan(num_images_horizontally=2, num_images_vertically=2,
         else:
             final_image = np.vstack((final_image, image_row))
 
-        z_f.wait()
+        z_f.join()
 
     return final_image
