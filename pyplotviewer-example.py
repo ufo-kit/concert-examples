@@ -4,10 +4,10 @@ concert.require("0.6")
 
 import numpy as np
 from concert.quantities import q
-from concert.helpers import coroutine
+from concert.coroutines.base import coroutine
 from concert.session.utils import ddoc, dstate, pdoc
 from concert.devices.cameras.dummy import Camera
-from concert.ext.viewers import PyplotCurveViewer, PyplotImageViewer
+from concert.ext.viewers import PyplotViewer, PyplotImageViewer
 
 
 __doc__ = "This is session pyplotviewer-example"
@@ -16,7 +16,7 @@ __doc__ = "This is session pyplotviewer-example"
 camera = Camera()
 camera.frame_rate = 10 * q.count / q.s
 frame_viewer = PyplotImageViewer(title="Live Preview")
-curve_viewer = PyplotCurveViewer(title="Mean Value")
+curve_viewer = PyplotViewer(title="Mean Value")
 
 
 def acquire(consumer):

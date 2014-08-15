@@ -1,3 +1,6 @@
+import concert
+concert.require("0.9.0")
+
 import timeit
 
 N_SETS = 1000
@@ -5,10 +8,10 @@ N_RUNS = 3
 
 setup_futures = """
 from concert.quantities import q
-from concert.helpers import wait
-from concert.devices.motors.dummy import Motor
+from concert.async import wait
+from concert.devices.motors.dummy import LinearMotor
 
-m = Motor()
+m = LinearMotor()
 
 def test_set_position():
     futures = [m.set_position(0 * q.mm) for i in range({})]
@@ -17,10 +20,10 @@ def test_set_position():
 
 setup_raw = """
 from concert.quantities import q
-from concert.helpers import wait
-from concert.devices.motors.dummy import Motor
+from concert.async import wait
+from concert.devices.motors.dummy import LinearMotor
 
-m = Motor()
+m = LinearMotor()
 
 def test_set_position():
     for i in range({}):

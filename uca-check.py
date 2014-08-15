@@ -50,7 +50,7 @@ def test_roi_result(camera):
 
 def check(camera_name):
     camera = Camera(camera_name)
-    camera.trigger_mode = camera.trigger_mode.AUTO
+    camera.trigger_mode = camera.trigger_modes.AUTO
 
     module = sys.modules[__name__]
 
