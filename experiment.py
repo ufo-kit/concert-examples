@@ -8,9 +8,10 @@ from functools import partial
 from concert.session.utils import ddoc, dstate, pdoc
 from concert.session.utils import code_of
 from concert.experiments.base import Acquisition
-from concert.experiments.imaging import Experiment
+from concert.experiments.base import Experiment
 from concert.coroutines.base import coroutine
 from concert.devices.cameras.dummy import Camera
+from concert.storage import DummyWalker
 
 LOG = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ radios = Acquisition("radios", partial(produce, 3), consumer_callers=[consume])
 acquisitions = [darks, flats, radios]
 
 
-def run(directory):
+def run():
     """Run the example and output the experiment data to *directory*."""
-    exper = Experiment(acquisitions, directory, log=LOG)
+    exper = Experiment(acquisitions, DummyWalker())
     exper.run().join()
