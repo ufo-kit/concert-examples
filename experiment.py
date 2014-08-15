@@ -1,4 +1,4 @@
-"""Call run('.') to simulate a data acquisition."""
+"""Call main() to simulate a data acquisition."""
 
 import concert
 concert.require("0.8.0")
@@ -40,7 +40,7 @@ radios = Acquisition("radios", partial(produce, 3), consumer_callers=[consume])
 acquisitions = [darks, flats, radios]
 
 
-def run():
+def main():
     """Run the example and output the experiment data to *directory*."""
     exper = Experiment(acquisitions, DummyWalker())
     exper.run().join()
