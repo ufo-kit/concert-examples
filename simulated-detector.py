@@ -1,14 +1,18 @@
 import concert
-concert.require("0.6.0")
+concert.require("0.10.0")
 
 __doc__ = "This session demonstrates the simulated camera."
 
 import numpy as np
-import matplotlib.pyplot as plt
 from concert.quantities import q
 from concert.session.utils import pdoc
 from concert.devices.cameras.dummy import Camera
 from concert.processes import scan
+from concert.async import resolve
+from concert.coroutines.base import broadcast, inject
+from concert.coroutines.sinks import Accumulate
+from concert.ext.viewers import PyplotViewer, PyplotImageViewer
+from concert.helpers import Range
 
 
 # Create a camera with noisy background
@@ -19,8 +23,9 @@ def get_exposure_result(min_exposure, max_exposure):
     def get_mean_frame_value():
         return np.mean(camera.grab())
 
-    return scan(camera['exposure_time'], get_mean_frame_value,
-                min_exposure, max_exposure)
+    prange = Range(camera['exposure_time'], min_exposure, max_exposure)
+
+    return scan(get_mean_frame_value, prange)
 
 
 def plot_exposure_scan(min_exposure=1*q.ms, max_exposure=500*q.ms):
@@ -30,11 +35,13 @@ def plot_exposure_scan(min_exposure=1*q.ms, max_exposure=500*q.ms):
 
     Returns: a tuple with exposure times and corresponding mean values.
     """
-    camera.start_recording()
-    x, y = get_exposure_result(min_exposure, max_exposure).result()
-    camera.stop_recording()
-    plt.plot(x, y)
-    return x, y
+    accum = Accumulate()
+
+    with camera.recording():
+        inject(resolve(get_exposure_result(min_exposure, max_exposure)),
+               broadcast(PyplotViewer(style='-o')(), accum()))
+
+    return zip(*accum.items)
 
 
 def save_exposure_scan(filename, min_exposure=1*q.ms, max_exposure=500*q.ms):
@@ -60,4 +67,4 @@ def show_camera_frame(exposure_time=5*q.ms):
     camera.start_recording()
     frame = camera.grab()
     camera.stop_recording()
-    plt.imshow(frame)
+    PyplotImageViewer().show(frame)
