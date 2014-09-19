@@ -44,23 +44,6 @@ def plot_exposure_scan(min_exposure=1*q.ms, max_exposure=500*q.ms):
     return zip(*accum.items)
 
 
-def save_exposure_scan(filename, min_exposure=1*q.ms, max_exposure=500*q.ms):
-    """
-    Run an exposure scan and save the result as a NeXus compliant file. This
-    requires that libnexus and NexPy are installed.
-    """
-    try:
-        from concert.ext.nexus import get_scan_result
-
-        scanner = get_exposure_scanner(min_exposure, max_exposure)
-        camera.start_recording()
-        data = get_scan_result(scanner).result()
-        camera.stop_recording()
-        data.save(filename)
-    except ImportError:
-        print("You have to install NexPy first")
-
-
 def show_camera_frame(exposure_time=5*q.ms):
     """Show the frame as produced by the camera given *exposure_time*"""
     camera.exposure_time = exposure_time
