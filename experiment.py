@@ -12,7 +12,6 @@ from concert.experiments.base import Experiment
 from concert.experiments.addons import Consumer
 from concert.coroutines.base import coroutine
 from concert.devices.cameras.dummy import Camera
-from concert.storage import DummyWalker
 from concert.ext.viewers import PyplotImageViewer
 
 LOG = logging.getLogger(__name__)
@@ -47,7 +46,6 @@ def main():
     """Run the example and output the experiment data to a dummy walker. Also show the images in a
     live preview addon.
     """
-    exper = Experiment(acquisitions, DummyWalker())
-    addon = Consumer(exper.acquisitions, viewer)
-    exper.attach(addon)
+    exper = Experiment(acquisitions)
+    Consumer(exper.acquisitions, viewer)
     exper.run().join()
