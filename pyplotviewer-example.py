@@ -32,7 +32,7 @@ def consume_frame():
     while True:
         frame = yield
         frame_viewer.show(frame)
-        curve_viewer.plot((camera.exposure_time, np.mean(frame)))
+        curve_viewer.plot(camera.exposure_time, np.mean(frame))
 
 
 def run():
