@@ -9,6 +9,7 @@ import numpy as np
 import scipy.misc
 import matplotlib.pyplot as plt
 from concert.quantities import q
+from concert.session.utils import ddoc, dstate, pdoc
 from concert.devices.cameras.dummy import Camera
 from concert.devices.motors.dummy import LinearMotor
 

@@ -1,4 +1,5 @@
-"""Demonstrating Concert capabilities"""
+"""---\nDemonstrating Concert capabilities."""
+
 import concert
 concert.require("0.6")
 

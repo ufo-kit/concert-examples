@@ -1,4 +1,5 @@
-"""Session showing image and curve viewing functionality."""
+"""---\nSession showing image and curve viewing functionality."""
+
 import concert
 concert.require("0.6")
 
@@ -8,9 +9,6 @@ from concert.coroutines.base import coroutine
 from concert.session.utils import ddoc, dstate, pdoc
 from concert.devices.cameras.dummy import Camera
 from concert.ext.viewers import PyplotViewer, PyplotImageViewer
-
-
-__doc__ = "This is session pyplotviewer-example"
 
 
 camera = Camera()

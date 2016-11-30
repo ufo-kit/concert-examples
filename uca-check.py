@@ -1,7 +1,13 @@
+"""---\nThis is session uca-check."""
+
+import concert
+concert.require("0.10.0")
+
 import sys
 import inspect
 import numpy as np
 from concert.quantities import q
+from concert.session.utils import ddoc, dstate, pdoc
 from concert.devices.cameras.uca import Camera
 
 try:
@@ -9,8 +15,6 @@ try:
     _clint_available = True
 except ImportError:
     _clint_available = False
-
-__doc__ = "This is session uca-check"
 
 
 def acquire_frame(camera):
@@ -50,7 +54,7 @@ def test_roi_result(camera):
 
 def check(camera_name):
     camera = Camera(camera_name)
-    camera.trigger_mode = camera.trigger_modes.AUTO
+    camera.trigger_source = camera.trigger_sources.AUTO
 
     module = sys.modules[__name__]
 
@@ -65,7 +69,6 @@ def check(camera_name):
             else:
                 status = '[OK]' if success else '[FAIL]'
                 print("{:<6} {:<40}{}".format(status, name, message))
-
 
 
 if __name__ == '__main__':

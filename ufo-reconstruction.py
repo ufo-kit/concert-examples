@@ -1,9 +1,13 @@
-__doc__ = """This session demonstrates reconstruction with the UFO data
+"""---\nThis session demonstrates reconstruction with the UFO data
 processing framework."""
+
+import concert
+concert.require("0.11.0")
 
 import numpy as np
 from gi.repository import Ufo
 from concert.quantities import q
+from concert.session.utils import ddoc, dstate, pdoc
 from concert.ext.ufo import PluginManager, InjectProcess
 from concert.devices.cameras.dummy import Camera
 
@@ -22,7 +26,7 @@ def reconstruct_from(camera):
     ifft = pm.get_task('ifft', dimensions=1)
     fltr = pm.get_task('filter')
     bp = pm.get_task('backproject')
-    writer = pm.get_task('writer')
+    writer = pm.get_task('write')
 
     graph = Ufo.TaskGraph()
     graph.connect_nodes(fft, fltr)
@@ -32,7 +36,7 @@ def reconstruct_from(camera):
 
     with InjectProcess(graph) as process:
         for frame in acquire(camera, 10):
-            process.push(frame)
+            process.insert(frame)
 
 
 if __name__ == '__main__':
