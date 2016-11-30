@@ -8,6 +8,6 @@ organized within a Concert session and how processes can be defined.
 
 Simply call
 
-    concert fetch --repo https://github.com/ufo-kit/concert-examples
+    concert import --repo https://github.com/ufo-kit/concert-examples
 
 and all session files will be imported.

@@ -1,4 +1,5 @@
-"""Session showing image viewing functionality."""
+"""---\nSession showing image viewing functionality."""
+
 import concert
 concert.require("0.6")
 
@@ -7,9 +8,6 @@ import numpy as np
 from concert.quantities import q
 from concert.session.utils import ddoc, dstate, pdoc
 from concert.ext.viewers import PyplotImageViewer
-
-
-__doc__ = "This is session pyplotviewer-example"
 
 
 def show_random(num=100):

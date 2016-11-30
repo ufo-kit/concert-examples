@@ -1,11 +1,11 @@
+""""---\nThis session demonstrates the simulated camera."""
+
 import concert
 concert.require("0.10.0")
 
-__doc__ = "This session demonstrates the simulated camera."
-
 import numpy as np
 from concert.quantities import q
-from concert.session.utils import pdoc
+from concert.session.utils import ddoc, dstate, pdoc
 from concert.devices.cameras.dummy import Camera
 from concert.processes.common import scan
 from concert.async import resolve
