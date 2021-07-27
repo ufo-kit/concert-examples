@@ -1,7 +1,12 @@
-"""---\nThis is session uca-check."""
+"""---\nThis is session uca-check.
 
+Usage:
+    check('mock')
+"""
+
+import asyncio
 import concert
-concert.require("0.10.0")
+concert.require("0.30")
 
 import sys
 import inspect
@@ -18,10 +23,12 @@ except ImportError:
 
 
 def acquire_frame(camera):
-    camera.start_recording()
-    frame = camera.grab()
-    camera.stop_recording()
-    return frame
+    async def get_frame():
+        async with camera.recording():
+            return await camera.grab()
+
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(get_frame())
 
 
 def test_bit_depth_consistency(camera):
@@ -45,8 +52,8 @@ def test_exposure_time_consistency(camera):
 
 
 def test_roi_result(camera):
-    camera.roi_width = 512 * q.count
-    camera.roi_height = 1024 * q.count
+    camera.roi_width = 512 * q.px
+    camera.roi_height = 1024 * q.px
     frame = acquire_frame(camera)
 
     return (frame.shape == (1024, 512), "image has a different size")
@@ -64,8 +71,10 @@ def check(camera_name):
             message = '' if success else message
 
             if _clint_available:
-                status = colored.green('[OK]') if success else colored.red('[FAIL]')
-                print("{:<16} {:<40}{}".format(status, name, message))
+                fmt = '{:<16}'
+                status = (colored.green(fmt.format('[OK]')) if success else
+                          colored.red(fmt.format('[FAIL]')))
+                print("{} {:<40}{}".format(status, name, message))
             else:
                 status = '[OK]' if success else '[FAIL]'
                 print("{:<6} {:<40}{}".format(status, name, message))

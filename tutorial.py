@@ -1,7 +1,13 @@
-"""---\nDemonstrating Concert capabilities."""
+"""---\nDemonstrating Concert capabilities.
+
+Usage:
+    print(ring)
+    print(motor)
+    print(camera)
+"""
 
 import concert
-concert.require("0.6")
+concert.require("0.30")
 
 import numpy as np
 from concert.quantities import q

@@ -1,51 +1,50 @@
-""""---\nThis session demonstrates the simulated camera."""
+""""---\nThis session demonstrates the simulated camera.
+
+Usage:
+    await plot_exposure_scan()
+    await show_camera_frame()
+"""
 
 import concert
-concert.require("0.10.0")
+concert.require("0.30")
 
 import numpy as np
+from concert.coroutines.base import broadcast
 from concert.quantities import q
+from concert.processes.common import ascan
 from concert.session.utils import ddoc, dstate, pdoc
 from concert.devices.cameras.dummy import Camera
 from concert.processes.common import scan
-from concert.async import resolve
-from concert.coroutines.base import broadcast, inject
 from concert.coroutines.sinks import Accumulate
 from concert.ext.viewers import PyplotViewer, PyplotImageViewer
-from concert.helpers import Region
 
 
 # Create a camera with noisy background
 camera = Camera(background=np.random.random((640, 480)))
+viewer = PyplotImageViewer(fast=False)
 
 
-def get_exposure_result(region):
-    def get_mean_frame_value():
-        return np.mean(camera.grab())
-
-    return scan(get_mean_frame_value, region)
-
-
-def plot_exposure_scan(min_exposure=1*q.ms, max_exposure=500*q.ms, num_points=10):
+async def plot_exposure_scan(min_exposure=1*q.ms, max_exposure=500*q.ms, step=50*q.ms):
     """
     Plot the mean value of the detector image for exposure times between
-    *min_exposure* and *max_exposure*, use *num_points* data points.
-
-    Returns: a tuple with exposure times and corresponding mean values.
+    *min_exposure* and *max_exposure* and use *step*.
     """
-    accum = Accumulate()
-    region = Region(camera['exposure_time'], np.linspace(min_exposure, max_exposure, num_points))
+    async def get_mean_frame_value():
+        return np.mean(await camera.grab())
 
-    with camera.recording():
-        inject(resolve(get_exposure_result(region)), broadcast(PyplotViewer(style='-o')(), accum()))
+    async def do_scan():
+        async with camera.recording():
+            async for item in ascan(camera['exposure_time'], min_exposure, max_exposure, step,
+                                    get_mean_frame_value, go_back=True):
+                yield item
 
-    return zip(*accum.items)
+    line = PyplotViewer(style='-o')
+    await line(do_scan(), force=True)
 
 
-def show_camera_frame(exposure_time=5*q.ms):
+async def show_camera_frame(exposure_time=5*q.ms):
     """Show the frame as produced by the camera given *exposure_time*"""
-    camera.exposure_time = exposure_time
-    camera.start_recording()
-    frame = camera.grab()
-    camera.stop_recording()
-    PyplotImageViewer().show(frame)
+    await camera.set_exposure_time(exposure_time)
+    async with camera.recording():
+        frame = await camera.grab()
+    await viewer.show(frame)
