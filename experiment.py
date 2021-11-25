@@ -1,14 +1,17 @@
-"""---\nCall main() to simulate a data acquisition."""
+"""---\nSimulate a data acquisition.
+
+Usage:
+    await main()
+"""
 
 import concert
-concert.require("0.11.0")
+concert.require("0.30")
 
 import logging
 from functools import partial
 from concert.session.utils import ddoc, dstate, pdoc, code_of
 from concert.experiments.base import Acquisition, Experiment
 from concert.experiments.addons import Consumer
-from concert.coroutines.base import coroutine
 from concert.devices.cameras.dummy import Camera
 from concert.ext.viewers import PyplotImageViewer
 
@@ -19,17 +22,15 @@ camera = Camera()
 viewer = PyplotImageViewer()
 
 
-def produce(num_frames):
+async def produce(num_frames):
     for i in range(num_frames):
-        yield camera.grab()
+        yield await camera.grab()
 
 
-@coroutine
-def consume():
+async def consume(producer):
     i = 1
 
-    while True:
-        yield
+    async for item in producer:
         LOG.info("Got frame number {}".format(i))
         i += 1
 
@@ -40,10 +41,10 @@ radios = Acquisition("radios", partial(produce, 20), consumers=[consume])
 acquisitions = [darks, flats, radios]
 
 
-def main():
+async def main():
     """Run the example and output the experiment data to a dummy walker.
     Also show the images in a live preview addon.
     """
     exper = Experiment(acquisitions)
     Consumer(exper.acquisitions, viewer)
-    exper.run().join()
+    await exper.run()

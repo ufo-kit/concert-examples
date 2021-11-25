@@ -1,45 +1,53 @@
 """---\nThis session demonstrates reconstruction with the UFO data
-processing framework."""
+processing framework.
 
+Usage:
+    await main()
+"""
+
+import asyncio
 import concert
-concert.require("0.11.0")
+concert.require("0.30")
+
+try:
+    import gi
+    gi.require_version('Ufo', '0.0')
+    from gi.repository import Ufo
+except ImportError as e:
+    print(str(e))
 
 import numpy as np
-from gi.repository import Ufo
 from concert.quantities import q
 from concert.session.utils import ddoc, dstate, pdoc
 from concert.ext.ufo import PluginManager, InjectProcess
-from concert.devices.cameras.dummy import Camera
+from concert.ext.viewers import PyplotImageViewer
 
 
-def acquire(camera, num_frames):
-    camera.start_recording()
-
-    for i in xrange(num_frames):
-        yield camera.grab()
+viewer = PyplotImageViewer(title='Sinogram', fast=False)
+slice_viewer = PyplotImageViewer(title='Slice', fast=False)
 
 
-def reconstruct_from(camera):
+async def reconstruct(sino):
     pm = PluginManager()
 
     fft = pm.get_task('fft', dimensions=1)
     ifft = pm.get_task('ifft', dimensions=1)
     fltr = pm.get_task('filter')
     bp = pm.get_task('backproject')
-    writer = pm.get_task('write')
 
     graph = Ufo.TaskGraph()
     graph.connect_nodes(fft, fltr)
     graph.connect_nodes(fltr, ifft)
     graph.connect_nodes(ifft, bp)
-    graph.connect_nodes(bp, writer)
 
-    with InjectProcess(graph) as process:
-        for frame in acquire(camera, 10):
-            process.insert(frame)
+    with InjectProcess(graph, get_output=True) as process:
+        await process.insert(sino)
+        return await process.result(leave_index=0)
 
 
-if __name__ == '__main__':
-    camera = Camera()
-    camera.frame_rate = 10 * q.count / q.s
-    reconstruct_from(camera)
+async def main():
+    sino = np.random.normal(size=(1024, 1024)).astype(np.float32)
+    sino[:, 760:770] = 5
+    slc = await reconstruct(sino)
+    await viewer.show(sino)
+    await slice_viewer.show(slc)

@@ -1,5 +1,10 @@
+"""---\nBenchmark coroutines performance.
+
+Usage:
+    benchmark()
+"""
 import concert
-concert.require("0.9.0")
+concert.require("0.30")
 
 import timeit
 
@@ -7,20 +12,23 @@ N_SETS = 1000
 N_RUNS = 3
 
 setup_futures = """
+import asyncio
 from concert.quantities import q
-from concert.async import wait
 from concert.devices.motors.dummy import LinearMotor
 
 m = LinearMotor()
 
+async def set_position():
+    coros = [m.set_position(0 * q.mm) for i in range({})]
+    await asyncio.gather(*coros)
+
 def test_set_position():
-    futures = [m.set_position(0 * q.mm) for i in range({})]
-    wait(futures)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(set_position())
 """.format(N_SETS)
 
 setup_raw = """
 from concert.quantities import q
-from concert.async import wait
 from concert.devices.motors.dummy import LinearMotor
 
 m = LinearMotor()

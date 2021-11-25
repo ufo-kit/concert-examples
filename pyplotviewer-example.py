@@ -1,11 +1,15 @@
-"""---\nSession showing image and curve viewing functionality."""
+"""---\nSession showing image and curve viewing functionality.
 
+Usage:
+    await run()
+"""
+
+import asyncio
 import concert
-concert.require("0.6")
+concert.require("0.30")
 
 import numpy as np
 from concert.quantities import q
-from concert.coroutines.base import coroutine
 from concert.session.utils import ddoc, dstate, pdoc
 from concert.devices.cameras.dummy import Camera
 from concert.ext.viewers import PyplotViewer, PyplotImageViewer
@@ -13,27 +17,25 @@ from concert.ext.viewers import PyplotViewer, PyplotImageViewer
 
 camera = Camera()
 camera.frame_rate = 10 * q.count / q.s
-frame_viewer = PyplotImageViewer(title="Live Preview")
+frame_viewer = PyplotImageViewer(title="Live Preview", limits=(0, 2000))
 curve_viewer = PyplotViewer(title="Mean Value")
 
 
-def acquire(consumer):
+async def acquire():
     """Acquire frames with different exposure time."""
     for exp_time in np.linspace(0.001, 10, 100) * q.ms:
-        camera.exposure_time = exp_time
-        consumer.send(camera.grab())
+        await camera.set_exposure_time(exp_time)
+        yield await camera.grab()
 
 
-@coroutine
-def consume_frame():
+async def consume_frame(producer):
     """Display each frame and it's mean."""
-    while True:
-        frame = yield
-        frame_viewer.show(frame)
-        curve_viewer.plot(camera.exposure_time, np.mean(frame))
+    async for frame in producer:
+        await frame_viewer.show(frame)
+        await curve_viewer.show((await camera.get_exposure_time(), np.mean(frame)))
 
 
-def run():
+async def run():
     """Run the example."""
-    curve_viewer.clear()
-    acquire(consume_frame())
+    curve_viewer.reset()
+    await consume_frame(acquire())
