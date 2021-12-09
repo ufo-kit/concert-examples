@@ -15,7 +15,7 @@ concert.require("0.30.0")
 from concert.coroutines.base import broadcast
 from concert.coroutines.sinks import Accumulate
 from concert.quantities import q
-from concert.session.utils import cdoc, ddoc, dstate, pdoc, code_of
+from concert.session.utils import ddoc, dstate, pdoc, code_of
 from concert.devices.cameras.dummy import Camera
 from concert.ext.viewers import PyplotViewer, PyQtGraphViewer
 from concert.processes.common import ascan
