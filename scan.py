@@ -1,4 +1,4 @@
-"""# *scan* shows scanning of camera's exposure time.
+"""# *scan* shows a Gaussian profile as a function of camera's exposure time.
 
 ## Usage
     await run(producer, line, acc)
@@ -8,6 +8,7 @@
 
 import asyncio
 import logging
+import math
 from inspect import iscoroutinefunction
 import concert
 concert.require("0.30.0")
@@ -28,12 +29,12 @@ concert.config.PROGRESS_BAR = False
 async def feedback():
     """Our feedback just returns image mean."""
     # Let's pretend this is a serious operation which takes a while
-    await asyncio.sleep(1)
+    await asyncio.sleep(0.2)
     image = await camera.grab()
     # Also show the current image
     await viewer.show(image)
 
-    return image.mean()
+    return math.exp(-(image.mean() - 4600) ** 2 / (2 * 1500 ** 2))
 
 
 async def run(producer, line, accumulator):
@@ -47,10 +48,10 @@ viewer = PyQtGraphViewer()
 # The last image will be quite bright
 viewer.limits = 0, 10000
 # Plot image mean
-line = PyplotViewer(style='-o')
+line = PyplotViewer(style='-o', force=True)
 # Dummy camera
 camera = Camera()
 # For scan results collection
 acc = Accumulate()
 # Let's create a scan so that it can be directly plugged into *run*
-producer = ascan(camera['exposure_time'], 1 * q.ms, 100 * q.ms, 10 * q.ms, feedback=feedback)
+producer = ascan(camera['exposure_time'], 1 * q.ms, 100 * q.ms, 2.5 * q.ms, feedback=feedback)
