@@ -29,7 +29,12 @@ from concert.devices.motors.dummy import LinearMotor
 LOG = logging.getLogger(__name__)
 
 
-motor_1 = LinearMotor()
+class CleanMotor(LinearMotor):
+    async def _emergency_stop(self):
+        print('cleanup...')
+
+
+motor_1 = CleanMotor()
 motor_2 = LinearMotor()
 motor_3 = LinearMotor()
 motor_1.motion_velocity = 1 * q.mm / q.s
