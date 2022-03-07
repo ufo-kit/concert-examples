@@ -55,10 +55,6 @@ class BlockingExperiment(Experiment):
 
     def __init__(self, walker, camera):
         super().__init__(walker, camera)
-        self.ready_to_prepare_next_sample = asyncio.Event()
-
-    def prepare(self):
-        self.ready_to_prepare_next_sample.clear()
 
     def finish(self):
         self.log.info("Finish start")
