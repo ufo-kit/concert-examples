@@ -6,7 +6,7 @@ Usage:
 
 import asyncio
 import concert
-concert.require("0.30")
+concert.require("0.31")
 
 import numpy as np
 from concert.quantities import q
@@ -15,10 +15,10 @@ from concert.devices.cameras.dummy import Camera
 from concert.ext.viewers import PyplotViewer, PyplotImageViewer
 
 
-camera = Camera()
-camera.frame_rate = 10 * q.count / q.s
-frame_viewer = PyplotImageViewer(title="Live Preview", limits=(0, 2000))
-curve_viewer = PyplotViewer(title="Mean Value")
+camera = await Camera()
+await camera.set_frame_rate(10 * q.count / q.s)
+frame_viewer = await PyplotImageViewer(title="Live Preview", limits=(0, 2000))
+curve_viewer = await PyplotViewer(title="Mean Value")
 
 
 async def acquire():

@@ -6,7 +6,7 @@ Usage:
 """
 
 import concert
-concert.require("0.30")
+concert.require("0.31")
 
 import numpy as np
 from concert.coroutines.base import broadcast
@@ -20,8 +20,8 @@ from concert.ext.viewers import PyplotViewer, PyplotImageViewer
 
 
 # Create a camera with noisy background
-camera = Camera(background=np.random.random((640, 480)))
-viewer = PyplotImageViewer(fast=False)
+camera = await Camera(background=np.random.random((640, 480)))
+viewer = await PyplotImageViewer(fast=False)
 
 
 async def plot_exposure_scan(min_exposure=1*q.ms, max_exposure=500*q.ms, step=50*q.ms):
@@ -38,7 +38,7 @@ async def plot_exposure_scan(min_exposure=1*q.ms, max_exposure=500*q.ms, step=50
                                     get_mean_frame_value, go_back=True):
                 yield item
 
-    line = PyplotViewer(style='-o')
+    line = await PyplotViewer(style='-o')
     await line(do_scan(), force=True)
 
 

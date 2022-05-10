@@ -11,7 +11,7 @@ experiment and how to set it up for absorption 3D reconstruction.
 import logging
 import numpy as np
 import concert
-concert.require("0.11.0")
+concert.require("0.31.0")
 
 from concert.quantities import q
 from concert.session.utils import ddoc, dstate, pdoc, code_of
@@ -50,16 +50,16 @@ class SmartImagingExperiment(ImagingExperiment):
 
 
 n = 512
-live_viewer = PyQtGraphViewer(show_refresh_rate=True, title='Projections')
-slice_viewer = PyQtGraphViewer(limits='auto', title='Slice')
+live_viewer = await PyQtGraphViewer(show_refresh_rate=True, title='Projections')
+slice_viewer = await PyQtGraphViewer(limits='auto', title='Slice')
 args = GeneralBackprojectArgs([n // 2], [n // 2 + 0.5], n, overall_angle=np.pi)
 args.absorptivity = True
 args.fix_nan_and_inf = True
 args.region = [-100.0, 101.0, 100.0]
-manager = GeneralBackprojectManager(args)
-ex = SmartImagingExperiment(100, 100, n, shape=(n, n), random='multi')
+manager = await GeneralBackprojectManager(args)
+ex = await SmartImagingExperiment(100, 100, n, shape=(n, n), random='multi')
 live = Consumer(ex.acquisitions, live_viewer)
-reco = OnlineReconstruction(ex, args, do_normalization=True, average_normalization=True)
+reco = await OnlineReconstruction(ex, args, do_normalization=True, average_normalization=True)
 
 
 async def main(region=None):

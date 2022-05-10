@@ -7,7 +7,7 @@ Usage:
 
 import asyncio
 import concert
-concert.require("0.30")
+concert.require("0.31")
 
 import numpy as np
 from concert.coroutines.base import run_in_executor
@@ -16,9 +16,9 @@ from concert.session.utils import ddoc, dstate, pdoc
 from concert.ext.viewers import PyplotImageViewer, PyQtGraphViewer
 
 
-fast = PyplotImageViewer(fast=True, title='Fast', show_refresh_rate=True)
-slow = PyplotImageViewer(fast=False, title='Slow', show_refresh_rate=True)
-pyqt = PyQtGraphViewer(title='PyQtGraph', show_refresh_rate=True)
+fast = await PyplotImageViewer(fast=True, title='Fast', show_refresh_rate=True)
+slow = await PyplotImageViewer(fast=False, title='Slow', show_refresh_rate=True)
+pyqt = await PyQtGraphViewer(title='PyQtGraph', show_refresh_rate=True)
 
 
 async def show_random(num=100):

@@ -10,7 +10,7 @@ import asyncio
 import logging
 from inspect import iscoroutinefunction
 import concert
-concert.require("0.30.0")
+concert.require("0.31")
 
 from concert.devices.motors.dummy import LinearMotor
 from concert.ext.viewers import PyplotImageViewer, PyplotViewer
@@ -22,12 +22,12 @@ from concert.session.utils import ddoc, dstate, pdoc, code_of
 LOG = logging.getLogger(__name__)
 
 
-motor = LinearMotor()
-motor.position = 0 * q.mm
-motor.motion_velocity = 5 * q.mm / q.s
-camera = BlurringCamera(motor)
-viewer = PyplotImageViewer(limits='auto', fast=False)
-line = PyplotViewer('-o')
+motor = await LinearMotor()
+await motor.set_position(0 * q.mm)
+await motor.set_motion_velocity(5 * q.mm / q.s)
+camera = await BlurringCamera(motor)
+viewer = await PyplotImageViewer(limits='auto', fast=False)
+line = await PyplotViewer('-o')
 
 
 async def main():

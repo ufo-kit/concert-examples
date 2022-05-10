@@ -20,7 +20,7 @@
 import logging
 from inspect import iscoroutinefunction
 import concert
-concert.require("0.30.1")
+concert.require("0.31")
 
 from concert.quantities import q
 from concert.session.utils import ddoc, dstate, pdoc, code_of
@@ -34,12 +34,12 @@ class CleanMotor(LinearMotor):
         print('cleanup...')
 
 
-motor_1 = CleanMotor()
-motor_2 = LinearMotor()
-motor_3 = LinearMotor()
-motor_1.motion_velocity = 1 * q.mm / q.s
-motor_2.motion_velocity = 1 * q.mm / q.s
-motor_3.motion_velocity = 1 * q.mm / q.s
+motor_1 = await CleanMotor()
+motor_2 = await LinearMotor()
+motor_3 = await LinearMotor()
+await motor_1.set_motion_velocity(1 * q.mm / q.s)
+await motor_2.set_motion_velocity(1 * q.mm / q.s)
+await motor_3.set_motion_velocity(1 * q.mm / q.s)
 
 
 def move_two():

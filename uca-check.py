@@ -6,7 +6,7 @@ Usage:
 
 import asyncio
 import concert
-concert.require("0.30")
+concert.require("0.31")
 
 import sys
 import inspect
@@ -22,52 +22,48 @@ except ImportError:
     _clint_available = False
 
 
-def acquire_frame(camera):
-    async def get_frame():
-        async with camera.recording():
-            return await camera.grab()
-
-    loop = asyncio.get_event_loop()
-    return loop.run_until_complete(get_frame())
+async def acquire_frame(camera):
+    async with camera.recording():
+        return await camera.grab()
 
 
-def test_bit_depth_consistency(camera):
-    camera.exposure_time = 1 * q.s
-    frame = acquire_frame(camera)
+async def test_bit_depth_consistency(camera):
+    await camera.set_exposure_time(1 * q.s)
+    frame = await acquire_frame(camera)
 
-    bits = camera.sensor_bitdepth
-    success = np.mean(frame) < 2**bits.magnitude
+    bits = await camera.get_sensor_bitdepth()
+    success = np.mean(frame) < 2 ** bits.magnitude
     return (success, "higher values than possible")
 
 
-def test_exposure_time_consistency(camera):
-    camera.exposure_time = 1 * q.ms
-    first = acquire_frame(camera)
+async def test_exposure_time_consistency(camera):
+    await camera.set_exposure_time(1 * q.ms)
+    first = await acquire_frame(camera)
 
-    camera.exposure_time = 100 * q.ms
-    second = acquire_frame(camera)
+    await camera.set_exposure_time(100 * q.ms)
+    second = await acquire_frame(camera)
 
     success = np.mean(first) < np.mean(second)
     return (success, "mean image value is lower than expected")
 
 
-def test_roi_result(camera):
-    camera.roi_width = 512 * q.px
-    camera.roi_height = 1024 * q.px
-    frame = acquire_frame(camera)
+async def test_roi_result(camera):
+    await camera.set_roi_width(512 * q.px)
+    await camera.set_roi_height(1024 * q.px)
+    frame = await acquire_frame(camera)
 
     return (frame.shape == (1024, 512), "image has a different size")
 
 
-def check(camera_name):
-    camera = Camera(camera_name)
-    camera.trigger_source = camera.trigger_sources.AUTO
+async def check(camera_name):
+    camera = await Camera(camera_name)
+    await camera.set_trigger_source(camera.trigger_sources.AUTO)
 
     module = sys.modules[__name__]
 
-    for name, obj in inspect.getmembers(module, inspect.isfunction):
+    for name, obj in inspect.getmembers(module, inspect.iscoroutinefunction):
         if name.startswith('test_'):
-            success, message = obj(camera)
+            success, message = await obj(camera)
             message = '' if success else message
 
             if _clint_available:
@@ -81,4 +77,4 @@ def check(camera_name):
 
 
 if __name__ == '__main__':
-    check("mock")
+    asyncio.get_event_loop().run_until_complete(check("mock"))
