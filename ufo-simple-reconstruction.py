@@ -7,7 +7,7 @@ Usage:
 
 import asyncio
 import concert
-concert.require("0.30")
+concert.require("0.31")
 
 try:
     import gi
@@ -23,8 +23,8 @@ from concert.ext.ufo import PluginManager, InjectProcess
 from concert.ext.viewers import PyplotImageViewer
 
 
-viewer = PyplotImageViewer(title='Sinogram', fast=False)
-slice_viewer = PyplotImageViewer(title='Slice', fast=False)
+viewer = await PyplotImageViewer(title='Sinogram', fast=False)
+slice_viewer = await PyplotImageViewer(title='Slice', fast=False)
 
 
 async def reconstruct(sino):

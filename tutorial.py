@@ -7,7 +7,7 @@ Usage:
 """
 
 import concert
-concert.require("0.30")
+concert.require("0.31")
 
 import numpy as np
 from concert.quantities import q
@@ -17,6 +17,6 @@ from concert.devices.motors.dummy import LinearMotor
 from concert.devices.storagerings.dummy import StorageRing
 
 
-ring = StorageRing()
-motor = LinearMotor()
-camera = Camera()
+ring = await StorageRing()
+motor = await LinearMotor()
+camera = await Camera()

@@ -7,7 +7,7 @@ Usage:
 """
 
 import concert
-concert.require('0.30')
+concert.require('0.31')
 
 import numpy as np
 import scipy.misc
@@ -20,13 +20,13 @@ from concert.ext.viewers import PyplotImageViewer
 
 
 # Create a camera with noisy background
-camera = Camera(background=scipy.misc.ascent())
+camera = await Camera(background=scipy.misc.ascent())
 
 # Assume motors' zero coordinate is left and up respectively
-x_motor = LinearMotor()
-z_motor = LinearMotor()
+x_motor = await LinearMotor()
+z_motor = await LinearMotor()
 
-viewer = PyplotImageViewer()
+viewer = await PyplotImageViewer()
 
 
 async def zig_zag_scan(num_images_horizontally=2, num_images_vertically=2,

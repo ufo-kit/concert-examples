@@ -11,7 +11,7 @@ import logging
 import math
 from inspect import iscoroutinefunction
 import concert
-concert.require("0.30.0")
+concert.require("0.31")
 
 from concert.coroutines.base import broadcast
 from concert.coroutines.sinks import Accumulate
@@ -44,13 +44,13 @@ async def run(producer, line, accumulator):
     return accumulator.items
 
 
-viewer = PyQtGraphViewer()
+viewer = await PyQtGraphViewer()
 # The last image will be quite bright
-viewer.limits = 0, 10000
+await viewer.set_limits((0, 10000))
 # Plot image mean
-line = PyplotViewer(style='-o', force=True)
+line = await PyplotViewer(style='-o', force=True)
 # Dummy camera
-camera = Camera()
+camera = await Camera()
 # For scan results collection
 acc = Accumulate()
 # Let's create a scan so that it can be directly plugged into *run*

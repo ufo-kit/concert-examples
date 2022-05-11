@@ -4,7 +4,7 @@ Usage:
     benchmark()
 """
 import concert
-concert.require("0.30")
+concert.require("0.31")
 
 import timeit
 
@@ -16,7 +16,7 @@ import asyncio
 from concert.quantities import q
 from concert.devices.motors.dummy import LinearMotor
 
-m = LinearMotor()
+m = asyncio.get_event_loop().run_until_complete(LinearMotor())
 
 async def set_position():
     coros = [m.set_position(0 * q.mm) for i in range({})]
@@ -28,10 +28,11 @@ def test_set_position():
 """.format(N_SETS)
 
 setup_raw = """
+import asyncio
 from concert.quantities import q
 from concert.devices.motors.dummy import LinearMotor
 
-m = LinearMotor()
+m = asyncio.get_event_loop().run_until_complete(LinearMotor())
 
 def test_set_position():
     for i in range({}):
